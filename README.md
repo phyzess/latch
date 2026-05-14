@@ -43,9 +43,12 @@ Service URLs must use HTTPS, cannot point at private or local hosts, and should 
 
 This template receives Latch runtime updates by updating the `@phyzess/latch` dependency.
 
-- GitHub users get Dependabot PRs from `.github/dependabot.yml`.
-- Renovate users can enable `renovate.json`.
-- Merge the version bump PR and Cloudflare Workers Builds will redeploy automatically.
+- GitHub repositories created from this template include `.github/workflows/update-latch-runtime.yml`.
+- That workflow checks npm every day, updates `@phyzess/latch` when a new version is available, runs `pnpm build` and `pnpm doctor`, then commits the version bump back to the repository.
+- Cloudflare Workers Builds redeploys automatically when that commit is pushed to the connected production branch.
+- GitHub Actions must be enabled, and Actions > General > Workflow permissions must allow read and write permissions for the workflow to push the update commit.
+- Dependabot remains configured as a weekly fallback PR path from `.github/dependabot.yml`.
+- Renovate users can enable `renovate.json` instead if they prefer review-first dependency updates.
 
 Your KV links and Worker secrets are not changed by dependency updates.
 
