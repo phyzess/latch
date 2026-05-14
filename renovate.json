@@ -5,7 +5,14 @@
   "packageRules": [
     {
       "matchManagers": ["npm"],
+      "matchPackageNames": ["@phyzess/latch"],
+      "groupName": "Latch runtime",
       "rangeStrategy": "pin"
+    },
+    {
+      "matchManagers": ["npm"],
+      "excludePackageNames": ["@phyzess/latch"],
+      "enabled": false
     }
   ]
 }

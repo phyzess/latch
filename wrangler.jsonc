@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "latch",
   "compatibility_date": "2026-05-13",
-  "main": "./src/worker.ts",
+  "main": "./worker.ts",
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",

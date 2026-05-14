@@ -1,82 +1,32 @@
 # Latch
 
-Latch is a private launch surface for self-hosted web services. It is built with Astro, vanilla Web Components, Cloudflare Workers Static Assets, and Workers KV for runtime service configuration.
+Latch is a private launch surface for self-hosted web services. This repository is the thin Cloudflare deployment template; the application runtime is delivered by the public npm package `@phyzess/latch`.
 
-## How to Deploy
+## Deploy to Cloudflare
 
 Important: clicking the Deploy to Cloudflare button is only the first step. Latch intentionally fails closed in production until Cloudflare Access is enabled and the Access values are configured on the Worker.
 
-### One-click Deploy
-
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/phyzess/latch)
 
-The deploy flow clones this public repository into your GitHub or GitLab account, builds the Worker, and provisions the `LATCH_CONFIG` Workers KV namespace from `wrangler.jsonc`.
+The deploy flow clones this template into your GitHub or GitLab account, installs `@phyzess/latch`, builds the packaged static assets, deploys the Worker, and provisions the `LATCH_CONFIG` Workers KV namespace from `wrangler.jsonc`.
 
-Cloudflare Workers Builds reads `.node-version` for the build runtime. The repository pins Node `26.1.0` there because Cloudflare does not read `mise.toml`, and `package.json` `engines` alone does not select the build image Node version.
+Cloudflare Workers Builds reads `.node-version` for the build runtime. This template pins Node `26.1.0`.
 
-After the deploy finishes:
+After deployment:
 
 1. Enable Cloudflare Access for the deployed Worker under Workers & Pages > your Worker > Settings > Domains & Routes.
 2. Use the one-click Access setup modal to copy `POLICY_AUD` and `TEAM_DOMAIN`. `TEAM_DOMAIN` may be either your Access team URL or the full `.../cdn-cgi/access/certs` URL.
 3. In Workers & Pages > your Worker > Settings > Variables and Secrets, set `POLICY_AUD` and `TEAM_DOMAIN` as secrets.
 4. Set `LATCH_ADMIN_EMAILS` to a comma-separated list of Cloudflare Access emails that may edit links, for example `you@example.com,ops@example.com`.
-5. Visit `/settings` on your deployed app, sign in through Access, and save your service YAML.
+5. Visit `/settings`, sign in through Access, and save your service YAML.
 
 Users who pass your Cloudflare Access policy can view the launcher. Only emails listed in `LATCH_ADMIN_EMAILS` can write config in `/settings`.
 
-### Local Wrangler Deploy
+## Configure Links
 
-If you prefer deploying from your machine:
+Production links live in the `LATCH_CONFIG` Workers KV namespace. They are edited from `/settings` and are not committed to this repository.
 
-```sh
-wrangler login
-pnpm deploy
-```
-
-Then complete the same Access and `LATCH_ADMIN_EMAILS` setup above. If deploying from CI, use a Cloudflare API token with permission to deploy Workers and manage the required bindings.
-
-### Troubleshooting Access
-
-- `Cloudflare Access must be configured in production`: `POLICY_AUD` or `TEAM_DOMAIN` is missing. Enable one-click Access and set both values on the Worker.
-- `Invalid or expired Access token`: `POLICY_AUD` or `TEAM_DOMAIN` does not match the active Access application. Reopen the Access setup modal and update the Worker secrets.
-- `403` on `/settings`: your Access email is not listed in `LATCH_ADMIN_EMAILS`.
-- Empty launcher after first deploy: this is normal until an admin saves YAML in `/settings`; before initialization `/services.json` returns `[]`.
-
-## Stack
-
-- Astro `6.3.1`
-- TypeScript `6.0.3`
-- Vanilla Custom Elements with open Shadow DOM
-- Valibot for service config validation
-- Cloudflare Workers Static Assets
-- Cloudflare Workers KV for service configuration
-- Cloudflare Access JWT validation for production auth
-- mise for local toolchain management
-
-## Quick Start
-
-```sh
-mise install
-pnpm install --frozen-lockfile
-pnpm dev
-```
-
-The development server uses `config/services.example.yaml`.
-
-For Worker-backed local development:
-
-```sh
-cp .dev.vars.example .dev.vars
-pnpm dev:worker
-```
-
-`localhost` skips Cloudflare Access and treats `dev@localhost` as an admin.
-
-## Runtime Config
-
-Production service lists live in the `LATCH_CONFIG` Workers KV namespace. Visit `/settings` after deployment to edit the YAML config.
-
-The YAML shape is:
+Example YAML:
 
 ```yaml
 services:
@@ -87,33 +37,32 @@ services:
     shortcut: "1"
 ```
 
-Real service lists must not be committed. For local validation of an ignored YAML file:
+Service URLs must use HTTPS, cannot point at private or local hosts, and should never include credentials or tokens.
+
+## Updates
+
+This template receives Latch runtime updates by updating the `@phyzess/latch` dependency.
+
+- GitHub users get Dependabot PRs from `.github/dependabot.yml`.
+- Renovate users can enable `renovate.json`.
+- Merge the version bump PR and Cloudflare Workers Builds will redeploy automatically.
+
+Your KV links and Worker secrets are not changed by dependency updates.
+
+## Local Commands
 
 ```sh
-LATCH_SERVICES_FILE=config/services.local.yaml pnpm validate:services:input
-```
-
-`pnpm generate:services:example` remains available for static UI development only.
-
-## Security Boundary
-
-Your service list is sensitive. Production deployments must place Cloudflare Access in front of the whole Latch domain. The Worker also validates the Cloudflare Access JWT in production and fails closed if `POLICY_AUD` or `TEAM_DOMAIN` are missing.
-
-Only emails listed in `LATCH_ADMIN_EMAILS` can edit links in `/settings`.
-
-Latch never stores service passwords, tokens, cookies, or credentials.
-
-## Useful Commands
-
-```sh
-pnpm validate:services
-LATCH_SERVICES_FILE=config/services.local.yaml pnpm validate:services:input
-pnpm check
-pnpm test
+mise install
+pnpm install
 pnpm build
+pnpm doctor
 pnpm deploy:dry
 ```
 
-## License
+Local installs require `@phyzess/latch` to be available on npm.
 
-MIT
+## Security
+
+Production deployments must place Cloudflare Access in front of the whole Latch domain. The Worker also validates the Cloudflare Access JWT in production and fails closed if `POLICY_AUD` or `TEAM_DOMAIN` are missing.
+
+Latch never stores service passwords, tokens, cookies, or credentials.

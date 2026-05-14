@@ -8,6 +8,4 @@ dist/
 !.env.example
 public/services.json
 config/services.local.yaml
-playwright-report/
-coverage/
 .DS_Store

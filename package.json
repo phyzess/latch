@@ -35,45 +35,15 @@
     }
   },
   "scripts": {
-    "dev": "pnpm generate:services:example && astro dev",
-    "dev:worker": "pnpm build && wrangler dev",
-    "build": "astro build && node scripts/remove-static-services.ts",
-    "build:example": "pnpm generate:services:example && astro build",
-    "preview": "astro preview",
-    "generate:services": "node scripts/generate-services.ts",
-    "generate:services:example": "node scripts/generate-services.ts --example",
-    "validate:services": "node scripts/generate-services.ts --example --check",
-    "validate:services:input": "node scripts/generate-services.ts --check",
-    "check": "astro check && pnpm lint",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "build": "latch build --out dist",
+    "doctor": "latch doctor",
     "deploy": "pnpm build && wrangler deploy",
     "deploy:dry": "pnpm build && wrangler deploy --dry-run"
   },
   "dependencies": {
-    "astro": "6.3.1",
-    "jose": "^6.2.3",
-    "valibot": "1.4.0",
-    "yaml": "2.9.0"
+    "@phyzess/latch": "0.1.0"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.9",
-    "@cloudflare/workers-types": "^4.20260511.1",
-    "@eslint/js": "10.0.1",
-    "@types/node": "25.7.0",
-    "@vitest/browser": "4.1.6",
-    "@vitest/coverage-v8": "4.1.6",
-    "eslint": "10.3.0",
-    "eslint-plugin-astro": "1.7.0",
-    "playwright": "1.60.0",
-    "prettier": "3.8.3",
-    "prettier-plugin-astro": "0.14.1",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.59.3",
-    "vitest": "4.1.6",
     "wrangler": "4.90.1"
   }
 }
