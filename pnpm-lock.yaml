@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@phyzess/latch':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.2
+        version: 0.1.2
     devDependencies:
       wrangler:
         specifier: 4.90.1
@@ -387,8 +387,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@phyzess/latch@0.1.1':
-    resolution: {integrity: sha512-V5y+V820xDiDpbUSW9+DiCEiormHkHcu7AHwIVWQhDb/dceuMuv5UHx2IQG5DkYPbc5L0M01bPVMGz82tKRQzw==}
+  '@phyzess/latch@0.1.2':
+    resolution: {integrity: sha512-6v26bwrewz6d9yuX4xnRsUMCt0sBi+4WU7QFMgLphRwh52GfwrWLVXH40k4aiEypXFsRyELxcPhvI7kJZiXm7w==}
     engines: {node: '>=26.1.0 <27', pnpm: '>=11.1.1 <12'}
     hasBin: true
 
@@ -720,7 +720,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@phyzess/latch@0.1.1': {}
+  '@phyzess/latch@0.1.2': {}
 
   '@poppinss/colors@4.1.6':
     dependencies:

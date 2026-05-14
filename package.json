@@ -42,7 +42,7 @@
     "deploy:dry": "pnpm build && wrangler deploy --dry-run"
   },
   "dependencies": {
-    "@phyzess/latch": "0.1.1"
+    "@phyzess/latch": "0.1.2"
   },
   "devDependencies": {
     "wrangler": "4.90.1"
