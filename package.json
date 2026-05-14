@@ -36,6 +36,8 @@
   },
   "scripts": {
     "build": "latch build --out dist",
+    "dev": "pnpm build && wrangler dev --port 0",
+    "dev:fixed": "pnpm build && wrangler dev --port 8787",
     "doctor": "latch doctor",
     "deploy": "pnpm build && wrangler deploy",
     "deploy:dry": "pnpm build && wrangler deploy --dry-run"

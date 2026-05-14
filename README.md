@@ -54,12 +54,15 @@ Your KV links and Worker secrets are not changed by dependency updates.
 ```sh
 mise install
 pnpm install
+pnpm dev
 pnpm build
 pnpm doctor
 pnpm deploy:dry
 ```
 
 Local installs require `@phyzess/latch` to be available on npm.
+
+`pnpm dev` builds the packaged Latch assets and starts Wrangler on an available local port. Open the `http://localhost:...` URL printed by Wrangler. Localhost skips Cloudflare Access and treats `dev@localhost` as an admin, so `/settings` can be used immediately. Links saved there use Wrangler's local KV state and do not affect production. Use `pnpm dev:fixed` if you specifically want `http://localhost:8787`.
 
 ## Security
 
