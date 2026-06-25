@@ -2,6 +2,16 @@
 
 Latch is a private launch surface for self-hosted web services. This repository is the thin Cloudflare deployment template; the application runtime is delivered by the public npm package `@phyzess/latch`.
 
+## Repository Model
+
+Latch is split across three repository roles:
+
+- `phyzess/latch-core` is the runtime source. UI, Worker behavior, CLI behavior, config validation, and tests belong there.
+- `phyzess/latch` is this reusable deployment template. It should contain only generic Cloudflare deployment files and example configuration.
+- Deployment instances are repositories created from this template, often named after the deployed Worker. They keep instance configuration such as Worker name, KV namespace bindings, admin emails, secrets in Cloudflare, and the pinned `@phyzess/latch` runtime version.
+
+After Cloudflare imports this template, keep production-specific changes in the generated deployment instance. Application runtime changes belong in `phyzess/latch-core` and are released through `@phyzess/latch`.
+
 ## Deploy to Cloudflare
 
 Important: clicking the Deploy to Cloudflare button is only the first step. Latch intentionally fails closed in production until Cloudflare Access is enabled and the Access values are configured on the Worker.
@@ -46,6 +56,7 @@ This template receives Latch runtime updates by updating the `@phyzess/latch` de
 - GitHub repositories created from this template include `.github/workflows/update-latch-runtime.yml`.
 - That workflow checks npm every day, updates `@phyzess/latch` when a new version is available, runs `pnpm build` and `pnpm doctor`, then commits the version bump back to the repository.
 - Cloudflare Workers Builds redeploys automatically when that commit is pushed to the connected production branch.
+- Existing deployment instances can run the same workflow manually after a new `@phyzess/latch` version is published, or wait for the scheduled check.
 - GitHub Actions must be enabled, and Actions > General > Workflow permissions must allow read and write permissions for the workflow to push the update commit.
 - Dependabot remains configured as a weekly fallback PR path from `.github/dependabot.yml`.
 - Renovate users can enable `renovate.json` instead if they prefer review-first dependency updates.
