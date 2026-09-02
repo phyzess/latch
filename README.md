@@ -14,7 +14,10 @@ After Cloudflare imports this template, keep production-specific changes in the 
 
 ## Deploy to Cloudflare
 
-Important: clicking the Deploy to Cloudflare button is only the first step. Latch intentionally fails closed in production until Cloudflare Access is enabled and the Access values are configured on the Worker.
+Latch supports two authentication modes:
+
+- **Built-in Latch login (recommended)** — a password-protected, long-lived session cookie handled entirely by this Worker. It does not depend on Cloudflare Access, email OTP, or any external identity provider.
+- **Cloudflare Access login** — if you already use Cloudflare Access, keep it in front of the Worker and configure `POLICY_AUD`/`TEAM_DOMAIN`. Latch validates the Access JWT and falls back to the built-in login page when no Access JWT is present.
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/phyzess/latch)
 
@@ -22,7 +25,19 @@ The deploy flow clones this template into your GitHub or GitLab account, install
 
 Cloudflare Workers Builds reads `.node-version` for the build runtime. This template pins Node `26.1.0`.
 
-After deployment:
+### Option A: Built-in login (recommended)
+
+1. In Workers & Pages > your Worker > Settings > Variables and Secrets, set these secrets:
+   - `LATCH_AUTH_PASSWORD` — a strong password you want to use to sign in.
+   - `LATCH_AUTH_SECRET` — a random value used to sign session cookies. Generate one with `openssl rand -base64 32`.
+   - `LATCH_ADMIN_EMAILS` — comma-separated emails allowed to edit `/settings`, for example `you@example.com,ops@example.com`.
+   - Optionally set `LATCH_AUTH_EMAIL` to limit login to a single email.
+2. Do **not** enable Cloudflare Access for this Worker. The built-in login page will be shown on the first visit.
+3. Visit `/settings`, sign in with the configured email/password, and save your service YAML.
+
+The session cookie is `HttpOnly`, `Secure`, `SameSite=Lax` and lasts 90 days by default. Configure `LATCH_AUTH_SESSION_TTL` (in seconds) to change that.
+
+### Option B: Cloudflare Access
 
 1. Enable Cloudflare Access for the deployed Worker under Workers & Pages > your Worker > Settings > Domains & Routes.
 2. Use the one-click Access setup modal to copy `POLICY_AUD` and `TEAM_DOMAIN`. `TEAM_DOMAIN` may be either your Access team URL or the full `.../cdn-cgi/access/certs` URL.
@@ -30,7 +45,7 @@ After deployment:
 4. Set `LATCH_ADMIN_EMAILS` to a comma-separated list of Cloudflare Access emails that may edit links, for example `you@example.com,ops@example.com`.
 5. Visit `/settings`, sign in through Access, and save your service YAML.
 
-Users who pass your Cloudflare Access policy can view the launcher. Only emails listed in `LATCH_ADMIN_EMAILS` can write config in `/settings`.
+Users who pass your Cloudflare Access policy can view the launcher. Only emails listed in `LATCH_ADMIN_EMAILS` can write config in `/settings`. If Access is not available, the built-in login page is served as a fallback as long as `LATCH_AUTH_PASSWORD` is configured.
 
 ## Configure Links
 
@@ -78,10 +93,13 @@ pnpm deploy:dry
 
 Local installs require `@phyzess/latch` to be available on npm.
 
-`pnpm dev` builds the packaged Latch assets and starts Wrangler on an available local port. Open the `http://localhost:...` URL printed by Wrangler. Localhost skips Cloudflare Access and treats `dev@localhost` as an admin, so `/settings` can be used immediately. Links saved there use Wrangler's local KV state and do not affect production.
+`pnpm dev` builds the packaged Latch assets and starts Wrangler on an available local port. Open the `http://localhost:...` URL printed by Wrangler. Localhost skips both authentication modes and treats `dev@localhost` as an admin, so `/settings` can be used immediately. Links saved there use Wrangler's local KV state and do not affect production.
 
 ## Security
 
-Production deployments must place Cloudflare Access in front of the whole Latch domain. The Worker also validates the Cloudflare Access JWT in production and fails closed if `POLICY_AUD` or `TEAM_DOMAIN` are missing.
+Production deployments must authenticate users before they reach the launcher. Choose one of:
+
+- Enable the built-in Latch login by setting `LATCH_AUTH_PASSWORD` and `LATCH_AUTH_SECRET`. Sessions are stateless HMAC-signed cookies with a 90-day default lifetime; they are `HttpOnly`, `Secure`, and `SameSite=Lax`.
+- Or place Cloudflare Access in front of the whole Latch domain and configure `POLICY_AUD`/`TEAM_DOMAIN`. The Worker validates the Cloudflare Access JWT and falls back to the built-in login page when Access is not available.
 
 Latch never stores service passwords, tokens, cookies, or credentials.

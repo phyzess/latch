@@ -1,7 +1,16 @@
-# Cloudflare Access is required outside local development.
+# Option A: Cloudflare Access (only if you keep Access in front of this Worker).
 # TEAM_DOMAIN may be the base Access URL or the full /cdn-cgi/access/certs URL.
-POLICY_AUD=your-access-policy-audience-tag
-TEAM_DOMAIN=https://your-team.cloudflareaccess.com
+# POLICY_AUD=your-access-policy-audience-tag
+# TEAM_DOMAIN=https://your-team.cloudflareaccess.com
 
-# Comma-separated Access user emails that can edit links in /settings.
+# Option B: built-in Latch login (recommended for personal/small-team deployments).
+# This gives a long-lived cookie and does not depend on Cloudflare Access or email OTP.
+LATCH_AUTH_PASSWORD=replace-with-a-strong-password
+LATCH_AUTH_SECRET=replace-with-a-random-32-byte-value
+# Optional: single login email. If omitted, any address in LATCH_ADMIN_EMAILS may log in.
+# LATCH_AUTH_EMAIL=admin@example.com
+# Optional: session lifetime in seconds (default 7776000 = 90 days).
+# LATCH_AUTH_SESSION_TTL=7776000
+
+# Comma-separated admin emails that can edit links in /settings.
 LATCH_ADMIN_EMAILS=admin@example.com

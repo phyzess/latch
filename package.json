@@ -24,7 +24,19 @@
     ],
     "bindings": {
       "LATCH_ADMIN_EMAILS": {
-        "description": "Comma-separated email addresses allowed to edit Latch links after signing in through Cloudflare Access."
+        "description": "Comma-separated emails allowed to edit Latch links. These users can also use the built-in login."
+      },
+      "LATCH_AUTH_PASSWORD": {
+        "description": "Strong password for the built-in login (recommended over Cloudflare Access for personal deployments)."
+      },
+      "LATCH_AUTH_SECRET": {
+        "description": "Random secret used to sign Latch session cookies, e.g. `openssl rand -base64 32`."
+      },
+      "LATCH_AUTH_EMAIL": {
+        "description": "Optional single email allowed to log in. If omitted, any address in LATCH_ADMIN_EMAILS may log in."
+      },
+      "LATCH_AUTH_SESSION_TTL": {
+        "description": "Optional session lifetime in seconds. Defaults to 7776000 (90 days)."
       },
       "POLICY_AUD": {
         "description": "Cloudflare Access application audience tag from the one-click Access setup modal."
